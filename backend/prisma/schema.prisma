@@ -1,0 +1,45 @@
+// Prisma schema for NutriApp
+// Docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ── Models ────────────────────────────────────────────────────────────────────
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  logs FoodLog[]
+}
+
+model FoodItem {
+  id       Int    @id @default(autoincrement())
+  name     String
+  calories Float
+  protein  Float  @default(0)
+  carbs    Float  @default(0)
+  fat      Float  @default(0)
+
+  logs FoodLog[]
+}
+
+model FoodLog {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  foodItemId Int
+  quantity   Float    @default(1)
+  loggedAt   DateTime @default(now())
+
+  user     User     @relation(fields: [userId], references: [id])
+  foodItem FoodItem @relation(fields: [foodItemId], references: [id])
+}
